@@ -70,15 +70,13 @@ function renderFoodItems() {
 // Function to attach event listeners to buttons
 function attachEventListeners() {
     document.querySelectorAll('.increase').forEach(button => {
-        button.addEventListener('click', () => {
-            adjustQuantity(button.dataset.name, 0.25);
-        });
+        button.removeEventListener('click', handleIncrease);
+        button.addEventListener('click', handleIncrease);
     });
 
     document.querySelectorAll('.decrease').forEach(button => {
-        button.addEventListener('click', () => {
-            adjustQuantity(button.dataset.name, -0.25);
-        });
+        button.removeEventListener('click', handleDecrease);
+        button.addEventListener('click', handleDecrease);
     });
 }
 

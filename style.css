@@ -230,3 +230,61 @@ footer {
         margin: 5px 0;
     }
 }
+
+/* Slider Styles */
+.slider {
+    display: flex;
+    overflow-x: auto;
+    padding: 20px;
+    scroll-snap-type: x mandatory;
+}
+
+.slider::-webkit-scrollbar {
+    height: 10px;
+}
+
+.slider::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    border-radius: 10px;
+}
+
+.food-item {
+    flex: 0 0 auto;
+    width: 150px;
+    margin-right: 20px;
+    padding: 15px;
+    border-radius: 20px;
+    background: #e0e0e0;
+    box-shadow: 7px 7px 14px #bebebe,
+                -7px -7px 14px #ffffff;
+    scroll-snap-align: start;
+    text-align: center;
+}
+
+.food-item h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.adjust-quantity {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Adjustments for Mobile View */
+@media screen and (max-width: 600px) {
+    .food-item {
+        width: 120px;
+    }
+
+    .adjust-quantity button {
+        width: 30px;
+        height: 30px;
+    }
+
+    .adjust-quantity span {
+        font-size: 14px;
+    }
+}

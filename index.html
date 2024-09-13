@@ -3,46 +3,38 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Nutritional Values Explorer</title>
+    <title>Nutritional Tracker</title>
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
     <header>
-        <h1>Nutritional Values Explorer</h1>
+        <h1>Nutritional Tracker</h1>
     </header>
     <main>
         <!-- Category Buttons -->
-        <section class="category-section">
-            <button class="category-button active" data-category="All">All</button>
-            <button class="category-button" data-category="Fruits">Fruits</button>
-            <button class="category-button" data-category="Vegetables">Vegetables</button>
-            <button class="category-button" data-category="Proteins">Proteins</button>
-            <button class="category-button" data-category="Grains">Grains</button>
-            <!-- Add more category buttons as needed -->
+        <section class="categories">
+            <button class="category-btn active" data-category="All">All</button>
+            <button class="category-btn" data-category="Fruits">Fruits</button>
+            <button class="category-btn" data-category="Vegetables">Vegetables</button>
+            <button class="category-btn" data-category="Proteins">Proteins</button>
+            <button class="category-btn" data-category="Grains">Grains</button>
         </section>
-        <!-- Search Section -->
-        <section class="search-section">
-            <input type="text" id="searchInput" placeholder="Search for food or recipe...">
-        </section>
-        <!-- Results Section -->
-        <section id="results">
-            <div id="food-items"></div>
-        </section>
-        <!-- Daily Totals Section -->
+
+        <!-- Food Selection Slider -->
+        <section id="food-selection" class="slider"></section>
+
+        <!-- Daily Totals -->
         <section id="daily-totals">
             <h2>Daily Totals</h2>
             <div id="totals-content"></div>
         </section>
     </main>
     <footer>
-        <p>&copy; 2023 Nutritional Values Explorer</p>
+        <p>&copy; 2023 Nutritional Tracker</p>
     </footer>
-
-
-<script src="script.js" defer></script>
-
+    <script src="script.js"></script>
 </body>
 
 </html>
