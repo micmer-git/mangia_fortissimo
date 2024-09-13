@@ -130,7 +130,10 @@ document.querySelectorAll('.category-btn').forEach(button => {
     });
 });
 
-// Initial Render
-updateDailyTotals();
-renderFoodItems();
-renderDailyTotals();
+document.addEventListener('DOMContentLoaded', function () {
+    // Initial Render
+    updateDailyTotals();
+    renderFoodItems();
+    renderDailyTotals();
+});
+
