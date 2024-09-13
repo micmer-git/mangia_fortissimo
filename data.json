@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Apple",
+        "macros": {
+            "protein": 0.3,
+            "fat": 0.2,
+            "carbs": 14
+        },
+        "micros": {
+            "calcium": 6,
+            "iron": 0.12
+        },
+        "vitamins": {
+            "vitaminC": 4.6,
+            "vitaminA": 54
+        }
+    },
+    {
+        "name": "Grilled Chicken Salad",
+        "macros": {
+            "protein": 27,
+            "fat": 3.6,
+            "carbs": 2.5
+        },
+        "micros": {
+            "calcium": 15,
+            "iron": 0.9
+        },
+        "vitamins": {
+            "vitaminC": 2.8,
+            "vitaminA": 180
+        }
+    }
+]
