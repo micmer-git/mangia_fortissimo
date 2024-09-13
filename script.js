@@ -1,32 +1,4 @@
-// Sample Data with Categories
-let data = [
-    {
-        name: "Apple",
-        category: "Fruits",
-        quantity: 1,
-        macros: { protein: 0.3, fat: 0.2, carbs: 14 },
-        micros: { calcium: 6, iron: 0.12 },
-        vitamins: { vitaminC: 4.6, vitaminA: 54 }
-    },
-    {
-        name: "Grilled Chicken",
-        category: "Proteins",
-        quantity: 1,
-        macros: { protein: 27, fat: 3.6, carbs: 0 },
-        micros: { calcium: 15, iron: 0.9 },
-        vitamins: { vitaminC: 0, vitaminA: 13 }
-    },
-    {
-        name: "Broccoli",
-        category: "Vegetables",
-        quantity: 1,
-        macros: { protein: 2.8, fat: 0.4, carbs: 7 },
-        micros: { calcium: 47, iron: 0.73 },
-        vitamins: { vitaminC: 89.2, vitaminA: 623 }
-    }
-    // Add more items as needed
-];
-
+let data = [];
 let selectedCategory = 'All';
 let dailyTotals = {
     macros: { protein: 0, fat: 0, carbs: 0 },
@@ -34,6 +6,14 @@ let dailyTotals = {
     vitamins: {}
 };
 
+fetch('data.json')
+    .then(response => response.json())
+    .then(jsonData => {
+        data = jsonData;
+        updateDailyTotals();
+        renderFoodItems();
+        renderDailyTotals();
+    });
 // Function to create progress bars
 function createProgressBar(label, value, maxValue) {
     const percentage = (value / maxValue) * 100;
