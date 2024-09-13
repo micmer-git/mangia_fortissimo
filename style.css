@@ -7,29 +7,75 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #e0e0e0;
     color: #333;
+}
+
+/* Neumorphism Variables */
+:root {
+    --background: #e0e0e0;
+    --shadow: #bebebe;
+    --highlight: #ffffff;
+    --radius: 10px;
 }
 
 /* Header */
 header {
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--background);
+    color: #333;
     padding: 20px;
     text-align: center;
+    box-shadow: inset 5px 5px 10px var(--shadow),
+        inset -5px -5px 10px var(--highlight);
+}
+
+/* Category Section */
+.category-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+}
+
+.category-button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: var(--background);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 5px 5px 10px var(--shadow),
+        -5px -5px 10px var(--highlight);
+    transition: all 0.2s ease;
+}
+
+.category-button.active {
+    box-shadow: inset 5px 5px 10px var(--shadow),
+        inset -5px -5px 10px var(--highlight);
+}
+
+.category-button:active {
+    box-shadow: inset 5px 5px 10px var(--shadow),
+        inset -5px -5px 10px var(--highlight);
 }
 
 /* Search Section */
 .search-section {
     padding: 20px;
     text-align: center;
-    background-color: #fff;
+    background-color: var(--background);
 }
 
 #searchInput {
-    width: 50%;
-    padding: 10px;
+    width: 80%;
+    max-width: 500px;
+    padding: 15px;
     font-size: 16px;
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: inset 5px 5px 10px var(--shadow),
+        inset -5px -5px 10px var(--highlight);
 }
 
 /* Results Section */
@@ -41,19 +87,21 @@ header {
 }
 
 .result-card {
-    background-color: white;
+    background-color: var(--background);
     width: 300px;
     margin: 15px;
-    border-radius: 8px;
+    border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 5px 5px 10px var(--shadow),
+        -5px -5px 10px var(--highlight);
+    position: relative;
 }
 
 .result-card h2 {
-    background-color: #4CAF50;
-    color: white;
+    color: #333;
     padding: 15px;
     font-size: 1.5em;
+    text-align: center;
 }
 
 .result-card .content {
@@ -65,10 +113,12 @@ header {
 }
 
 .progress-bar {
-    background-color: #ddd;
+    background-color: var(--background);
     border-radius: 20px;
     overflow: hidden;
     margin-bottom: 10px;
+    box-shadow: inset 2px 2px 5px var(--shadow),
+        inset -2px -2px 5px var(--highlight);
 }
 
 .progress {
@@ -80,10 +130,103 @@ header {
     line-height: 20px;
 }
 
+.quantity-controller {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.quantity-controller button {
+    background-color: var(--background);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+    margin: 0 10px;
+    box-shadow: 5px 5px 10px var(--shadow),
+        -5px -5px 10px var(--highlight);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quantity-controller button:active {
+    box-shadow: inset 5px 5px 10px var(--shadow),
+        inset -5px -5px 10px var(--highlight);
+}
+
+.quantity-display {
+    font-size: 16px;
+    width: 50px;
+    text-align: center;
+}
+
+/* Daily Totals Section */
+#daily-totals {
+    background-color: var(--background);
+    margin: 20px;
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: inset 5px 5px 10px var(--shadow),
+        inset -5px -5px 10px var(--highlight);
+}
+
+#daily-totals h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#daily-totals .content h3 {
+    margin-bottom: 10px;
+}
+
+#daily-totals .content div {
+    margin-bottom: 10px;
+}
+
 /* Footer */
 footer {
-    background-color: #333;
-    color: white;
+    background-color: var(--background);
+    color: #333;
     text-align: center;
     padding: 10px 0;
+    box-shadow: inset 5px 5px 10px var(--shadow),
+        inset -5px -5px 10px var(--highlight);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #searchInput {
+        width: 90%;
+    }
+
+    .result-card {
+        width: 90%;
+        margin: 10px;
+    }
+
+    .category-button {
+        flex: 1 1 40%;
+        margin: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .quantity-controller button {
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+        margin: 0 5px;
+    }
+
+    .quantity-display {
+        font-size: 14px;
+        width: 40px;
+    }
+
+    .category-button {
+        flex: 1 1 100%;
+        margin: 5px 0;
+    }
 }

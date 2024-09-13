@@ -1,68 +1,156 @@
+// Sample Data with Categories
+let data = [
+    {
+        name: "Apple",
+        category: "Fruits",
+        quantity: 1,
+        macros: { protein: 0.3, fat: 0.2, carbs: 14 },
+        micros: { calcium: 6, iron: 0.12 },
+        vitamins: { vitaminC: 4.6, vitaminA: 54 }
+    },
+    {
+        name: "Grilled Chicken",
+        category: "Proteins",
+        quantity: 1,
+        macros: { protein: 27, fat: 3.6, carbs: 0 },
+        micros: { calcium: 15, iron: 0.9 },
+        vitamins: { vitaminC: 0, vitaminA: 13 }
+    },
+    {
+        name: "Broccoli",
+        category: "Vegetables",
+        quantity: 1,
+        macros: { protein: 2.8, fat: 0.4, carbs: 7 },
+        micros: { calcium: 47, iron: 0.73 },
+        vitamins: { vitaminC: 89.2, vitaminA: 623 }
+    }
+    // Add more items as needed
+];
 
-let data = [];
-
-fetch('data.json')
-    .then(response => response.json())
-    .then(jsonData => {
-        data = jsonData;
-        renderResults(data);
-    });
-
-
+let selectedCategory = 'All';
+let dailyTotals = {
+    macros: { protein: 0, fat: 0, carbs: 0 },
+    micros: {},
+    vitamins: {}
+};
 
 // Function to create progress bars
 function createProgressBar(label, value, maxValue) {
     const percentage = (value / maxValue) * 100;
     return `
         <div>
-            <label>${label}: ${value}${label === 'Calories' ? 'kcal' : 'g'}</label>
+            <label>${label}: ${value.toFixed(2)}${label === 'Calories' ? ' kcal' : ' g'}</label>
             <div class="progress-bar">
                 <div class="progress" style="width: ${percentage > 100 ? 100 : percentage}%;">
-                    ${percentage > 10 ? `${Math.round(percentage)}%` : ''}
                 </div>
             </div>
         </div>
     `;
 }
 
+// Function to render food items
+function renderFoodItems() {
+    const foodContainer = document.getElementById('food-items');
+    foodContainer.innerHTML = '';
 
+    const filteredData = selectedCategory === 'All' ? data : data.filter(item => item.category === selectedCategory);
 
-// Function to render results
-function renderResults(items) {
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = '';
-
-    items.forEach(item => {
-        const totalMacros = item.macros.protein + item.macros.fat + item.macros.carbs;
-        const calories = (item.macros.protein * 4) + (item.macros.fat * 9) + (item.macros.carbs * 4);
+    filteredData.forEach(item => {
+        const totalMacros = (item.macros.protein + item.macros.fat + item.macros.carbs) * item.quantity;
+        const calories = ((item.macros.protein * 4) + (item.macros.fat * 9) + (item.macros.carbs * 4)) * item.quantity;
 
         const card = document.createElement('div');
-        card.className = 'result-card';
+        card.className = 'food-card neumorphic';
         card.innerHTML = `
             <h2>${item.name}</h2>
+            <div class="adjust-quantity">
+                <button class="decrease" data-name="${item.name}">-</button>
+                <span>${item.quantity.toFixed(2)}</span>
+                <button class="increase" data-name="${item.name}">+</button>
+            </div>
             <div class="content">
                 <h3>Macros</h3>
-                ${createProgressBar('Protein', item.macros.protein, totalMacros)}
-                ${createProgressBar('Fat', item.macros.fat, totalMacros)}
-                ${createProgressBar('Carbs', item.macros.carbs, totalMacros)}
-                <h3>Micros</h3>
-                ${Object.entries(item.micros).map(([key, value]) => `<p>${key}: ${value}mg</p>`).join('')}
-                <h3>Vitamins</h3>
-                ${Object.entries(item.vitamins).map(([key, value]) => `<p>${key}: ${value}mg</p>`).join('')}
+                ${createProgressBar('Protein', item.macros.protein * item.quantity, totalMacros)}
+                ${createProgressBar('Fat', item.macros.fat * item.quantity, totalMacros)}
+                ${createProgressBar('Carbs', item.macros.carbs * item.quantity, totalMacros)}
                 <h3>Calories</h3>
                 ${createProgressBar('Calories', calories, 2000)}
             </div>
         `;
-        resultsContainer.appendChild(card);
+        foodContainer.appendChild(card);
+    });
+
+    attachEventListeners();
+}
+
+// Function to attach event listeners to buttons
+function attachEventListeners() {
+    document.querySelectorAll('.increase').forEach(button => {
+        button.addEventListener('click', () => {
+            adjustQuantity(button.dataset.name, 0.25);
+        });
+    });
+
+    document.querySelectorAll('.decrease').forEach(button => {
+        button.addEventListener('click', () => {
+            adjustQuantity(button.dataset.name, -0.25);
+        });
     });
 }
 
-// Search Functionality
-document.getElementById('searchInput').addEventListener('input', function () {
-    const query = this.value.toLowerCase();
-    const filteredData = data.filter(item => item.name.toLowerCase().includes(query));
-    renderResults(filteredData);
+// Function to adjust quantity
+function adjustQuantity(name, amount) {
+    data = data.map(item => {
+        if (item.name === name) {
+            item.quantity = Math.max(0, item.quantity + amount);
+        }
+        return item;
+    });
+    updateDailyTotals();
+    renderFoodItems();
+    renderDailyTotals();
+}
+
+// Function to update daily totals
+function updateDailyTotals() {
+    dailyTotals = {
+        macros: { protein: 0, fat: 0, carbs: 0 },
+        calories: 0
+    };
+
+    data.forEach(item => {
+        dailyTotals.macros.protein += item.macros.protein * item.quantity;
+        dailyTotals.macros.fat += item.macros.fat * item.quantity;
+        dailyTotals.macros.carbs += item.macros.carbs * item.quantity;
+    });
+
+    dailyTotals.calories = (dailyTotals.macros.protein * 4) + (dailyTotals.macros.fat * 9) + (dailyTotals.macros.carbs * 4);
+}
+
+// Function to render daily totals
+function renderDailyTotals() {
+    const totalsContent = document.getElementById('totals-content');
+    const totalMacros = dailyTotals.macros.protein + dailyTotals.macros.fat + dailyTotals.macros.carbs;
+
+    totalsContent.innerHTML = `
+        <h3>Macros</h3>
+        ${createProgressBar('Protein', dailyTotals.macros.protein, totalMacros)}
+        ${createProgressBar('Fat', dailyTotals.macros.fat, totalMacros)}
+        ${createProgressBar('Carbs', dailyTotals.macros.carbs, totalMacros)}
+        <h3>Calories</h3>
+        ${createProgressBar('Calories', dailyTotals.calories, 2000)}
+    `;
+}
+
+// Category Button Event Listeners
+document.querySelectorAll('.category-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        selectedCategory = button.dataset.category;
+        renderFoodItems();
+    });
 });
 
 // Initial Render
-renderResults(data);
+updateDailyTotals();
+renderFoodItems();
+renderDailyTotals();
