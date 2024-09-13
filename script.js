@@ -31,6 +31,10 @@ function createProgressBar(label, value, maxValue) {
 // Function to render food items
 function renderFoodItems() {
     const foodContainer = document.getElementById('food-items');
+    if (!foodContainer) {
+        console.error("Food container not found");
+        return;
+    }
     foodContainer.innerHTML = '';
 
     const filteredData = selectedCategory === 'All' ? data : data.filter(item => item.category === selectedCategory);
