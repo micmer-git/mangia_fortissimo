@@ -66,29 +66,7 @@ function addFood(foodName) {
     }
 }
 
-// Load Summary View
-function loadSummary() {
-    // Display a summary of nutrients (this would pull from user's data)
-    const html = `
-    <h2>Summary of the Day</h2>
-    <!-- Macronutrients -->
-    <h3>Macronutrients</h3>
-    <ul>
-      <li>Calories: 2000 kcal</li>
-      <li>Proteins: 75g</li>
-      <li>Carbohydrates: 250g</li>
-      <li>Fats: 70g</li>
-      <!-- Add other macronutrients -->
-    </ul>
-    <!-- Vitamins -->
-    <h3>Vitamins</h3>
-    <!-- List vitamins -->
-    <!-- Minerals -->
-    <h3>Minerals</h3>
-    <!-- List minerals -->
-  `;
-    document.getElementById('content').innerHTML = html;
-}
+
 
 // Load Suggestion View
 function loadSuggestion() {
@@ -174,36 +152,67 @@ function addFood(foodName) {
     }
 }
 
-// Update loadSummary function to display daily intake
-function loadSummary() {
-    // Calculate totals from dailyIntake
-    let totalCalories = 0;
-    let totalProtein = 0;
-    // ... other nutrients
+/function loadSummary() {
+// Initialize totals
+let totalCalories = 0;
+let totalProtein = 0;
+let totalCarbs = 0;
+let totalFats = 0;
+// ... other nutrients
 
-    // Fetch food data to calculate totals
-    fetch('data/foods.json')
-        .then(response => response.json())
-        .then(data => {
-            dailyIntake.forEach(item => {
-                const food = data.find(f => f.name === item.foodName);
+// Fetch food data to calculate totals
+fetch('data/foods.json')
+    .then(response => response.json())
+    .then(data => {
+        dailyIntake.forEach(item => {
+            const food = data.find(f => f.name === item.foodName);
+            if (food) {
                 const factor = item.portion / 100; // Assuming nutrients are per 100g
                 totalCalories += food.nutrients.calories * factor;
                 totalProtein += food.nutrients.protein * factor;
+                totalCarbs += food.nutrients.carboidrati * factor;
+                totalFats += food.nutrients.grassi_totali * factor;
                 // ... other nutrients
-            });
-
-            // Display the summary
-            const html = `
-        <h2>Summary of the Day</h2>
-        <ul>
-          <li>Calories: ${totalCalories.toFixed(2)} kcal</li>
-          <li>Proteins: ${totalProtein.toFixed(2)}g</li>
-          <!-- Other nutrients -->
-        </ul>
-      `;
-            document.getElementById('content').innerHTML = html;
+            }
         });
+
+        // Display the summary
+        const html = `
+                <h2>Summary of the Day</h2>
+                <ul>
+                    <li>Calories: ${totalCalories.toFixed(2)} kcal</li>
+                    <li>Proteins: ${totalProtein.toFixed(2)}g</li>
+                    <li>Carbohydrates: ${totalCarbs.toFixed(2)}g</li>
+                    <li>Fats: ${totalFats.toFixed(2)}g</li>
+                    <!-- Add other nutrients here -->
+                </ul>
+                <canvas id="macronutrientChart"></canvas>
+            `;
+        document.getElementById('content').innerHTML = html;
+
+        // Create chart
+        const ctx = document.getElementById('macronutrientChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Proteins', 'Carbs', 'Fats'],
+                datasets: [{
+                    data: [totalProtein, totalCarbs, totalFats],
+                    backgroundColor: ['#3498db', '#2ecc71', '#e74c3c']
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Macronutrient Distribution'
+                }
+            }
+        });
+    })
+    .catch(error => {
+        console.error('Error loading food data:', error);
+        document.getElementById('content').innerHTML = '<p>Error loading summary. Please try again later.</p>';
+    });
 }
 function loadFoodSuggestions() {
     const nutrient = document.getElementById('nutrient-select').value;
