@@ -58,12 +58,11 @@ function displayFoods(foods) {
 }
 
 function addFood(foodName) {
-    // Prompt user for portion size
     const portion = prompt(`Enter portion size for ${foodName} (in grams):`, 100);
     if (portion) {
-        // Add the food to the daily intake (store in local storage or a variable)
+        dailyIntake.push({ foodName, portion: parseFloat(portion) });
+        localStorage.setItem('dailyIntake', JSON.stringify(dailyIntake));
         alert(`${foodName} (${portion}g) added to your daily intake.`);
-        // Update the user's data accordingly
     }
 }
 
@@ -169,7 +168,7 @@ let dailyIntake = JSON.parse(localStorage.getItem('dailyIntake')) || [];
 function addFood(foodName) {
     const portion = prompt(`Enter portion size for ${foodName} (in grams):`, 100);
     if (portion) {
-        dailyIntake.push({ foodName, portion });
+        dailyIntake.push({ foodName, portion: parseFloat(portion) });
         localStorage.setItem('dailyIntake', JSON.stringify(dailyIntake));
         alert(`${foodName} (${portion}g) added to your daily intake.`);
     }
