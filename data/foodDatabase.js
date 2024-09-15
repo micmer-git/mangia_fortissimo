@@ -1,4 +1,4 @@
-{
+export const foodData = {
     frutta: [
         {
             name: "Mela", emoji: "🍎", calories: 52, portion: 150, servingSize: 150, nutrients: {

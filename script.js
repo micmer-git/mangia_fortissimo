@@ -1,229 +1,140 @@
 // Wait for the DOM to load
 document.addEventListener('DOMContentLoaded', () => {
-    // Navigation items
     const navFoodSelection = document.getElementById('nav-food-selection');
     const navSummary = document.getElementById('nav-summary');
     const navSuggestion = document.getElementById('nav-suggestion');
-
-    // Content container
     const content = document.getElementById('content');
 
-    // Event listeners for navigation
     navFoodSelection.addEventListener('click', loadFoodSelection);
     navSummary.addEventListener('click', loadSummary);
     navSuggestion.addEventListener('click', loadSuggestion);
 
-    // Load default view
     loadFoodSelection();
 });
 
-// Load Food Selection View
 function loadFoodSelection() {
-    // Fetch food categories and display them
-    // For simplicity, we'll hardcode categories
-    const categories = ['Fruits', 'Vegetables', 'Grains', 'Proteins', 'Dairy'];
-
-    let html = '<h2>Select a Food Category</h2><ul id="categories">';
-    categories.forEach(category => {
-        html += `<li><a href="#" onclick="selectCategory('${category}')">${category}</a></li>`;
-    });
-    html += '</ul><div id="food-list"></div>';
-
-    document.getElementById('content').innerHTML = html;
-}
-
-// Handle Category Selection
-function selectCategory(category) {
-    // Fetch foods from JSON based on category
-    fetch('data/foods.json')
+    fetch('data/food.json')
         .then(response => response.json())
         .then(data => {
-            const foods = data.filter(food => food.category === category);
-            displayFoods(foods);
-        });
-}
-
-// Display Foods in Selected Category
-function displayFoods(foods) {
-    let html = '<h3>Select Foods</h3><ul>';
-    foods.forEach(food => {
-        html += `<li>${food.name} <button onclick="addFood('${food.name}')">Add</button></li>`;
-    });
-    html += '</ul>';
-
-    document.getElementById('food-list').innerHTML = html;
-}
-
-
-
-function addFood(foodName) {
-    // Prompt user for portion size
-    const portion = prompt(`Enter portion size for ${foodName} (in grams):`, 100);
-    if (portion) {
-        // Add the food to the daily intake (store in local storage or a variable)
-        alert(`${foodName} (${portion}g) added to your daily intake.`);
-        // Update the user's data accordingly
-    }
-}
-
-
-
-// Load Summary View
-function loadSummary() {
-    // Display a summary of nutrients (this would pull from user's data)
-    const html = `
-    <h2>Summary of the Day</h2>
-    <!-- Macronutrients -->
-    <h3>Macronutrients</h3>
-    <ul>
-      <li>Calories: 2000 kcal</li>
-      <li>Proteins: 75g</li>
-      <li>Carbohydrates: 250g</li>
-      <li>Fats: 70g</li>
-      <!-- Add other macronutrients -->
-    </ul>
-    <!-- Vitamins -->
-    <h3>Vitamins</h3>
-    <!-- List vitamins -->
-    <!-- Minerals -->
-    <h3>Minerals</h3>
-    <!-- List minerals -->
-  `;
-    document.getElementById('content').innerHTML = html;
-}
-
-// Load Suggestion View
-function loadSuggestion() {
-    // Display suggestions based on nutrient deficiencies
-    const html = `
-    <h2>Food Suggestions</h2>
-    <p>Select a nutrient to find foods rich in it per 100kcal.</p>
-    <select id="nutrient-select" onchange="loadFoodSuggestions()">
-      <option value="">--Select Nutrient--</option>
-      <option value="protein">Protein</option>
-      <option value="fiber">Fiber</option>
-      <!-- Add other nutrients -->
-    </select>
-    <div id="suggestions-list"></div>
-  `;
-    document.getElementById('content').innerHTML = html;
-}
-
-// Load Food Suggestions Based on Selected Nutrient
-function loadFoodSuggestions() {
-    const nutrient = document.getElementById('nutrient-select').value;
-    if (nutrient) {
-        fetch('data/foods.json')
-            .then(response => response.json())
-            .then(data => {
-                // Sort foods based on nutrient content per 100kcal
-                const sortedFoods = data.sort((a, b) => b.nutrients[nutrient] - a.nutrients[nutrient]);
-                displaySuggestions(sortedFoods.slice(0, 10), nutrient);
+            const categories = Object.keys(data);
+            let html = '<h2>Select a Food Category</h2><div class="neumorphic">';
+            categories.forEach(category => {
+                html += `<button onclick="selectCategory('${category}')">${category}</button>`;
             });
-    }
-}
-
-// Display Food Suggestions
-function displaySuggestions(foods, nutrient) {
-    let html = `<h3>Top Foods Rich in ${nutrient.charAt(0).toUpperCase() + nutrient.slice(1)} per 100kcal</h3><ul>`;
-    foods.forEach(food => {
-        html += `<li>${food.name}: ${food.nutrients[nutrient]}g</li>`;
-    });
-    html += '</ul>';
-    document.getElementById('suggestions-list').innerHTML = html;
-}
-
-
-function loadSummary() {
-    // Calculate totals (same as before)
-
-    // After calculating totals, display chart
-    const html = `
-    <h2>Summary of the Day</h2>
-    <canvas id="macronutrientChart"></canvas>
-  `;
-    document.getElementById('content').innerHTML = html;
-
-    // Create chart
-    const ctx = document.getElementById('macronutrientChart').getContext('2d');
-    const chart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Proteins', 'Carbs', 'Fats'],
-            datasets: [{
-                data: [totalProtein, totalCarbs, totalFats],
-                backgroundColor: ['#3498db', '#2ecc71', '#e74c3c']
-            }]
-        },
-        options: {
-            title: {
-                display: true,
-                text: 'Macronutrient Distribution'
-            }
-        }
-    });
-}
-
-
-// Initialize daily intake
-let dailyIntake = JSON.parse(localStorage.getItem('dailyIntake')) || [];
-
-// Update addFood function
-function addFood(foodName) {
-    const portion = prompt(`Enter portion size for ${foodName} (in grams):`, 100);
-    if (portion) {
-        dailyIntake.push({ foodName, portion });
-        localStorage.setItem('dailyIntake', JSON.stringify(dailyIntake));
-        alert(`${foodName} (${portion}g) added to your daily intake.`);
-    }
-}
-
-// Update loadSummary function to display daily intake
-function loadSummary() {
-    // Calculate totals from dailyIntake
-    let totalCalories = 0;
-    let totalProtein = 0;
-    // ... other nutrients
-
-    // Fetch food data to calculate totals
-    fetch('data/foods.json')
-        .then(response => response.json())
-        .then(data => {
-            dailyIntake.forEach(item => {
-                const food = data.find(f => f.name === item.foodName);
-                const factor = item.portion / 100; // Assuming nutrients are per 100g
-                totalCalories += food.nutrients.calories * factor;
-                totalProtein += food.nutrients.protein * factor;
-                // ... other nutrients
-            });
-
-            // Display the summary
-            const html = `
-        <h2>Summary of the Day</h2>
-        <ul>
-          <li>Calories: ${totalCalories.toFixed(2)} kcal</li>
-          <li>Proteins: ${totalProtein.toFixed(2)}g</li>
-          <!-- Other nutrients -->
-        </ul>
-      `;
+            html += '</div><div id="food-list"></div>';
             document.getElementById('content').innerHTML = html;
         });
 }
+
+function selectCategory(category) {
+    fetch('data/food.json')
+        .then(response => response.json())
+        .then(data => {
+            const foods = data[category];
+            displayFoods(foods, category);
+        });
+}
+
+function displayFoods(foods, category) {
+    let html = `<h3>${category}</h3><div class="neumorphic">`;
+    foods.forEach(food => {
+        html += `<div>${food.name} ${food.emoji} <button onclick="addFood('${category}', '${food.name}')">Add</button></div>`;
+    });
+    html += '</div>';
+    document.getElementById('food-list').innerHTML = html;
+}
+
+let dailyIntake = [];
+
+function addFood(category, foodName) {
+    fetch('data/food.json')
+        .then(response => response.json())
+        .then(data => {
+            const food = data[category].find(f => f.name === foodName);
+            const portion = prompt(`Enter portion size for ${foodName} (in grams):`, food.portion);
+            if (portion) {
+                const scaleFactor = portion / food.portion;
+                const scaledNutrients = {};
+                Object.keys(food.nutrients).forEach(nutrient => {
+                    scaledNutrients[nutrient] = food.nutrients[nutrient] * scaleFactor;
+                });
+                dailyIntake.push({
+                    name: food.name,
+                    portion: parseInt(portion),
+                    calories: food.calories * scaleFactor,
+                    nutrients: scaledNutrients
+                });
+                alert(`${food.name} (${portion}g) added to your daily intake.`);
+            }
+        });
+}
+
+function loadSummary() {
+    const totalNutrients = dailyIntake.reduce((acc, food) => {
+        Object.keys(food.nutrients).forEach(nutrient => {
+            acc[nutrient] = (acc[nutrient] || 0) + food.nutrients[nutrient];
+        });
+        acc.calories = (acc.calories || 0) + food.calories;
+        return acc;
+    }, {});
+
+    let html = '<h2>Summary of the Day</h2><div class="neumorphic">';
+    html += `<p>Total Calories: ${totalNutrients.calories.toFixed(2)} kcal</p>`;
+    html += '<h3>Macronutrients</h3>';
+    html += `<p>Carbohydrates: ${totalNutrients.carboidrati.toFixed(2)}g</p>`;
+    html += `<p>Proteins: ${totalNutrients.proteine.toFixed(2)}g</p>`;
+    html += `<p>Fats: ${totalNutrients.grassi_totali.toFixed(2)}g</p>`;
+    html += '<h3>Micronutrients</h3>';
+    Object.keys(totalNutrients).forEach(nutrient => {
+        if (!['calories', 'carboidrati', 'proteine', 'grassi_totali'].includes(nutrient)) {
+            html += `<p>${nutrient}: ${totalNutrients[nutrient].toFixed(2)}g</p>`;
+        }
+    });
+    html += '</div>';
+    document.getElementById('content').innerHTML = html;
+}
+
+function loadSuggestion() {
+    let html = `
+    <h2>Food Suggestions</h2>
+    <div class="neumorphic">
+        <p>Select a nutrient to find foods rich in it per 100kcal.</p>
+        <select id="nutrient-select" onchange="loadFoodSuggestions()">
+            <option value="">--Select Nutrient--</option>
+            <option value="proteine">Protein</option>
+            <option value="fibre">Fiber</option>
+            <option value="vitaminaC">Vitamin C</option>
+            <option value="ferro">Iron</option>
+        </select>
+    </div>
+    <div id="suggestions-list"></div>
+    `;
+    document.getElementById('content').innerHTML = html;
+}
+
 function loadFoodSuggestions() {
     const nutrient = document.getElementById('nutrient-select').value;
     if (nutrient) {
-        fetch('data/foods.json')
+        fetch('data/food.json')
             .then(response => response.json())
             .then(data => {
-                // Calculate nutrient per 100kcal
-                const foodsPer100kcal = data.map(food => {
-                    const nutrientPer100kcal = (food.nutrients[nutrient] / food.nutrients.calories) * 100;
-                    return { name: food.name, value: nutrientPer100kcal };
+                const allFoods = Object.values(data).flat();
+                const sortedFoods = allFoods.sort((a, b) => {
+                    const aRatio = a.nutrients[nutrient] / (a.calories / 100);
+                    const bRatio = b.nutrients[nutrient] / (b.calories / 100);
+                    return bRatio - aRatio;
                 });
-
-                // Sort foods
-                const sortedFoods = foodsPer100kcal.sort((a, b) => b.value - a.value);
                 displaySuggestions(sortedFoods.slice(0, 10), nutrient);
             });
     }
+}
+
+function displaySuggestions(foods, nutrient) {
+    let html = `<h3>Top Foods Rich in ${nutrient} per 100kcal</h3><div class="neumorphic">`;
+    foods.forEach(food => {
+        const ratio = (food.nutrients[nutrient] / (food.calories / 100)).toFixed(2);
+        html += `<p>${food.name} ${food.emoji}: ${ratio}g per 100kcal</p>`;
+    });
+    html += '</div>';
+    document.getElementById('suggestions-list').innerHTML = html;
 }
