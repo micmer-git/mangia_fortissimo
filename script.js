@@ -1,4 +1,8 @@
+import { foodData } from './data/foodDatabase.js';
+
+
 // Wait for the DOM to load
+
 document.addEventListener('DOMContentLoaded', () => {
     // Navigation items
     const navFoodSelection = document.getElementById('nav-food-selection');
@@ -34,13 +38,12 @@ function loadFoodSelection() {
 
 // Handle Category Selection
 function selectCategory(category) {
-    // Fetch foods from JSON based on category
-    fetch('data/foods.json')
-        .then(response => response.json())
-        .then(data => {
-            const foods = data.filter(food => food.category === category);
-            displayFoods(foods);
-        });
+    if (foodData[category]) {
+        // Handle the category data
+        console.log(foodData[category]);
+    } else {
+        console.error('Category not found');
+    }
 }
 
 // Display Foods in Selected Category
@@ -54,8 +57,6 @@ function displayFoods(foods) {
     document.getElementById('food-list').innerHTML = html;
 }
 
-
-
 function addFood(foodName) {
     // Prompt user for portion size
     const portion = prompt(`Enter portion size for ${foodName} (in grams):`, 100);
@@ -65,8 +66,6 @@ function addFood(foodName) {
         // Update the user's data accordingly
     }
 }
-
-
 
 // Load Summary View
 function loadSummary() {
@@ -162,7 +161,6 @@ function loadSummary() {
         }
     });
 }
-
 
 // Initialize daily intake
 let dailyIntake = JSON.parse(localStorage.getItem('dailyIntake')) || [];
