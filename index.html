@@ -3,369 +3,42 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>Nutritional App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriViz - Visualize Your Nutrition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary-color: #4CAF50;
-            --secondary-color: #FFC107;
-            --text-color: #333;
-            --background-color: #f4f4f4;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .search-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        #search-input {
-            width: 60%;
-            padding: 10px;
-            font-size: 1rem;
-            border: 2px solid var(--primary-color);
-            border-radius: 5px 0 0 5px;
-        }
-
-        #search-button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        #search-button:hover {
-            background-color: #45a049;
-        }
-
-        .food-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .food-item {
-            background-color: white;
-            border-radius: 5px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .food-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .food-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .nutrition-info {
-            background-color: white;
-            border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .nutrition-info h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-
-        .chart-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-
-        .chart {
-            width: 30%;
-            height: 300px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Link to CSS -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <header>
-        <h1>NutriViz</h1>
-        <p>Visualize Your Nutrition</p>
-    </header>
 
-    <div class="container">
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search for a food or recipe...">
-            <button id="search-button">Search</button>
-        </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">NutritionApp</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="nav-food-selection">Food Selection</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="nav-summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="nav-suggestion">Suggestion</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-        <div class="food-list" id="food-list"></div>
 
-        <div class="nutrition-info" id="nutrition-info" style="display: none;">
-            <h2 id="food-name"></h2>
-            <div class="chart-container">
-                <canvas id="macroChart" class="chart"></canvas>
-                <canvas id="microChart" class="chart"></canvas>
-                <canvas id="vitaminChart" class="chart"></canvas>
-            </div>
-            <table id="nutrition-table"></table>
-        </div>
+    <!-- Content Container -->
+    <div id="content">
+        <!-- Dynamic content will be loaded here -->
     </div>
 
-    <script>
-        const foodData = [
-            {
-                name: "Grilled Chicken Breast",
-                image: "https://source.unsplash.com/featured/?grilled,chicken",
-                macros: { protein: 31, carbs: 0, fat: 3.6 },
-                micros: { sodium: 74, potassium: 256, calcium: 15 },
-                vitamins: { A: 1, C: 0, D: 0, E: 0.3, K: 0 }
-            },
-            {
-                name: "Salmon Fillet",
-                image: "https://source.unsplash.com/featured/?salmon,fillet",
-                macros: { protein: 22, carbs: 0, fat: 13 },
-                micros: { sodium: 50, potassium: 366, calcium: 12 },
-                vitamins: { A: 2, C: 3, D: 11, E: 2, K: 0 }
-            },
-            {
-                name: "Quinoa Salad",
-                image: "https://source.unsplash.com/featured/?quinoa,salad",
-                macros: { protein: 4, carbs: 21, fat: 1.9 },
-                micros: { sodium: 7, potassium: 172, calcium: 17 },
-                vitamins: { A: 1, C: 0, D: 0, E: 0.6, K: 0 }
-            },
-            {
-                name: "Greek Yogurt",
-                image: "https://source.unsplash.com/featured/?greek,yogurt",
-                macros: { protein: 17, carbs: 6, fat: 5 },
-                micros: { sodium: 68, potassium: 240, calcium: 200 },
-                vitamins: { A: 2, C: 0, D: 0, E: 0.1, K: 0 }
-            }
-        ];
-
-        function createFoodList() {
-            const foodList = document.getElementById('food-list');
-            foodList.innerHTML = '';
-
-            foodData.forEach(food => {
-                const foodItem = document.createElement('div');
-                foodItem.classList.add('food-item');
-                foodItem.innerHTML = `
-                    <img src="${food.image}" alt="${food.name}">
-                    <h3>${food.name}</h3>
-                `;
-                foodItem.addEventListener('click', () => showNutritionInfo(food));
-                foodList.appendChild(foodItem);
-            });
-        }
-
-        function showNutritionInfo(food) {
-            const nutritionInfo = document.getElementById('nutrition-info');
-            nutritionInfo.style.display = 'block';
-
-            document.getElementById('food-name').textContent = food.name;
-
-            createMacroChart(food.macros);
-            createMicroChart(food.micros);
-            createVitaminChart(food.vitamins);
-            createNutritionTable(food);
-        }
-
-        function createMacroChart(macros) {
-            const ctx = document.getElementById('macroChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(macros),
-                    datasets: [{
-                        data: Object.values(macros),
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    title: {
-                        display: true,
-                        text: 'Macronutrients'
-                    }
-                }
-            });
-        }
-
-        function createMicroChart(micros) {
-            const ctx = document.getElementById('microChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(micros),
-                    datasets: [{
-                        data: Object.values(micros),
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    title: {
-                        display: true,
-                        text: 'Micronutrients'
-                    },
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
-                }
-            });
-        }
-
-        function createVitaminChart(vitamins) {
-            const ctx = document.getElementById('vitaminChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: Object.keys(vitamins),
-                    datasets: [{
-                        data: Object.values(vitamins),
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        pointBackgroundColor: 'rgba(255, 99, 132, 1)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    title: {
-                        display: true,
-                        text: 'Vitamins'
-                    },
-                    scale: {
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function createNutritionTable(food) {
-            const table = document.getElementById('nutrition-table');
-            table.innerHTML = `
-                <tr>
-                    <th>Nutrient</th>
-                    <th>Amount</th>
-                </tr>
-                ${Object.entries(food.macros).map(([nutrient, value]) => `
-                    <tr>
-                        <td>${nutrient}</td>
-                        <td>${value}g</td>
-                    </tr>
-                `).join('')}
-                ${Object.entries(food.micros).map(([nutrient, value]) => `
-                    <tr>
-                        <td>${nutrient}</td>
-                        <td>${value}mg</td>
-                    </tr>
-                `).join('')}
-                ${Object.entries(food.vitamins).map(([nutrient, value]) => `
-                    <tr>
-                        <td>Vitamin ${nutrient}</td>
-                        <td>${value}%</td>
-                    </tr>
-                `).join('')}
-            `;
-        }
-
-        document.getElementById('search-button').addEventListener('click', () => {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const filteredFoods = foodData.filter(food => food.name.toLowerCase().includes(searchTerm));
-
-            const foodList = document.getElementById('food-list');
-            foodList.innerHTML = '';
-
-            filteredFoods.forEach(food => {
-                const foodItem = document.createElement('div');
-                foodItem.classList.add('food-item');
-                foodItem.innerHTML = `
-                    <img src="${food.image}" alt="${food.name}">
-                    <h3>${food.name}</h3>
-                `;
-                foodItem.addEventListener('click', () => showNutritionInfo(food));
-                foodList.appendChild(foodItem);
-            });
-        });
-
-        createFoodList();
-    </script>
+    <!-- Link to JavaScript -->
+    <script src="script.js"></script>
 </body>
+
+
 
 </html>

@@ -1,141 +1,125 @@
-let data = [];
-let selectedCategory = 'All';
-let dailyTotals = {
-    macros: { protein: 0, fat: 0, carbs: 0 },
-    micros: {},
-    vitamins: {}
-};
+// Wait for the DOM to load
+document.addEventListener('DOMContentLoaded', () => {
+    // Navigation items
+    const navFoodSelection = document.getElementById('nav-food-selection');
+    const navSummary = document.getElementById('nav-summary');
+    const navSuggestion = document.getElementById('nav-suggestion');
 
-fetch('data.json')
-    .then(response => response.json())
-    .then(jsonData => {
-        data = jsonData;
-        updateDailyTotals();
-        renderFoodItems();
-        renderDailyTotals();
+    // Content container
+    const content = document.getElementById('content');
+
+    // Event listeners for navigation
+    navFoodSelection.addEventListener('click', loadFoodSelection);
+    navSummary.addEventListener('click', loadSummary);
+    navSuggestion.addEventListener('click', loadSuggestion);
+
+    // Load default view
+    loadFoodSelection();
+});
+
+// Load Food Selection View
+function loadFoodSelection() {
+    // Fetch food categories and display them
+    // For simplicity, we'll hardcode categories
+    const categories = ['Fruits', 'Vegetables', 'Grains', 'Proteins', 'Dairy'];
+
+    let html = '<h2>Select a Food Category</h2><ul id="categories">';
+    categories.forEach(category => {
+        html += `<li><a href="#" onclick="selectCategory('${category}')">${category}</a></li>`;
     });
-// Function to create progress bars
-function createProgressBar(label, value, maxValue) {
-    const percentage = (value / maxValue) * 100;
-    return `
-        <div>
-            <label>${label}: ${value.toFixed(2)}${label === 'Calories' ? ' kcal' : ' g'}</label>
-            <div class="progress-bar">
-                <div class="progress" style="width: ${percentage > 100 ? 100 : percentage}%;">
-                </div>
-            </div>
-        </div>
-    `;
+    html += '</ul><div id="food-list"></div>';
+
+    document.getElementById('content').innerHTML = html;
 }
 
-// Function to render food items
-function renderFoodItems() {
-    const foodContainer = document.getElementById('food-items');
-    if (!foodContainer) {
-        console.error("Food container not found");
-        return;
+// Handle Category Selection
+function selectCategory(category) {
+    // Fetch foods from JSON based on category
+    fetch('data/foods.json')
+        .then(response => response.json())
+        .then(data => {
+            const foods = data.filter(food => food.category === category);
+            displayFoods(foods);
+        });
+}
+
+// Display Foods in Selected Category
+function displayFoods(foods) {
+    let html = '<h3>Select Foods</h3><ul>';
+    foods.forEach(food => {
+        html += `<li>${food.name} <button onclick="addFood('${food.name}')">Add</button></li>`;
+    });
+    html += '</ul>';
+
+    document.getElementById('food-list').innerHTML = html;
+}
+
+// Add Food to Daily Intake (this would update user's data)
+function addFood(foodName) {
+    alert(`${foodName} added to your daily intake.`);
+}
+
+// Load Summary View
+function loadSummary() {
+    // Display a summary of nutrients (this would pull from user's data)
+    const html = `
+    <h2>Summary of the Day</h2>
+    <!-- Macronutrients -->
+    <h3>Macronutrients</h3>
+    <ul>
+      <li>Calories: 2000 kcal</li>
+      <li>Proteins: 75g</li>
+      <li>Carbohydrates: 250g</li>
+      <li>Fats: 70g</li>
+      <!-- Add other macronutrients -->
+    </ul>
+    <!-- Vitamins -->
+    <h3>Vitamins</h3>
+    <!-- List vitamins -->
+    <!-- Minerals -->
+    <h3>Minerals</h3>
+    <!-- List minerals -->
+  `;
+    document.getElementById('content').innerHTML = html;
+}
+
+// Load Suggestion View
+function loadSuggestion() {
+    // Display suggestions based on nutrient deficiencies
+    const html = `
+    <h2>Food Suggestions</h2>
+    <p>Select a nutrient to find foods rich in it per 100kcal.</p>
+    <select id="nutrient-select" onchange="loadFoodSuggestions()">
+      <option value="">--Select Nutrient--</option>
+      <option value="protein">Protein</option>
+      <option value="fiber">Fiber</option>
+      <!-- Add other nutrients -->
+    </select>
+    <div id="suggestions-list"></div>
+  `;
+    document.getElementById('content').innerHTML = html;
+}
+
+// Load Food Suggestions Based on Selected Nutrient
+function loadFoodSuggestions() {
+    const nutrient = document.getElementById('nutrient-select').value;
+    if (nutrient) {
+        fetch('data/foods.json')
+            .then(response => response.json())
+            .then(data => {
+                // Sort foods based on nutrient content per 100kcal
+                const sortedFoods = data.sort((a, b) => b.nutrients[nutrient] - a.nutrients[nutrient]);
+                displaySuggestions(sortedFoods.slice(0, 10), nutrient);
+            });
     }
-    foodContainer.innerHTML = '';
-
-    const filteredData = selectedCategory === 'All' ? data : data.filter(item => item.category === selectedCategory);
-
-    filteredData.forEach(item => {
-        const totalMacros = (item.macros.protein + item.macros.fat + item.macros.carbs) * item.quantity;
-        const calories = ((item.macros.protein * 4) + (item.macros.fat * 9) + (item.macros.carbs * 4)) * item.quantity;
-
-        const card = document.createElement('div');
-        card.className = 'food-card neumorphic';
-        card.innerHTML = `
-            <h2>${item.name}</h2>
-            <div class="adjust-quantity">
-                <button class="decrease" data-name="${item.name}">-</button>
-                <span>${item.quantity.toFixed(2)}</span>
-                <button class="increase" data-name="${item.name}">+</button>
-            </div>
-            <div class="content">
-                <h3>Macros</h3>
-                ${createProgressBar('Protein', item.macros.protein * item.quantity, totalMacros)}
-                ${createProgressBar('Fat', item.macros.fat * item.quantity, totalMacros)}
-                ${createProgressBar('Carbs', item.macros.carbs * item.quantity, totalMacros)}
-                <h3>Calories</h3>
-                ${createProgressBar('Calories', calories, 2000)}
-            </div>
-        `;
-        foodContainer.appendChild(card);
-    });
-
-    attachEventListeners();
 }
 
-// Function to attach event listeners to buttons
-function attachEventListeners() {
-    document.querySelectorAll('.increase').forEach(button => {
-        button.removeEventListener('click', handleIncrease);
-        button.addEventListener('click', handleIncrease);
+// Display Food Suggestions
+function displaySuggestions(foods, nutrient) {
+    let html = `<h3>Top Foods Rich in ${nutrient.charAt(0).toUpperCase() + nutrient.slice(1)} per 100kcal</h3><ul>`;
+    foods.forEach(food => {
+        html += `<li>${food.name}: ${food.nutrients[nutrient]}g</li>`;
     });
-
-    document.querySelectorAll('.decrease').forEach(button => {
-        button.removeEventListener('click', handleDecrease);
-        button.addEventListener('click', handleDecrease);
-    });
+    html += '</ul>';
+    document.getElementById('suggestions-list').innerHTML = html;
 }
-
-// Function to adjust quantity
-function adjustQuantity(name, amount) {
-    data = data.map(item => {
-        if (item.name === name) {
-            item.quantity = Math.max(0, item.quantity + amount);
-        }
-        return item;
-    });
-    updateDailyTotals();
-    renderFoodItems();
-    renderDailyTotals();
-}
-
-// Function to update daily totals
-function updateDailyTotals() {
-    dailyTotals = {
-        macros: { protein: 0, fat: 0, carbs: 0 },
-        calories: 0
-    };
-
-    data.forEach(item => {
-        dailyTotals.macros.protein += item.macros.protein * item.quantity;
-        dailyTotals.macros.fat += item.macros.fat * item.quantity;
-        dailyTotals.macros.carbs += item.macros.carbs * item.quantity;
-    });
-
-    dailyTotals.calories = (dailyTotals.macros.protein * 4) + (dailyTotals.macros.fat * 9) + (dailyTotals.macros.carbs * 4);
-}
-
-// Function to render daily totals
-function renderDailyTotals() {
-    const totalsContent = document.getElementById('totals-content');
-    const totalMacros = dailyTotals.macros.protein + dailyTotals.macros.fat + dailyTotals.macros.carbs;
-
-    totalsContent.innerHTML = `
-        <h3>Macros</h3>
-        ${createProgressBar('Protein', dailyTotals.macros.protein, totalMacros)}
-        ${createProgressBar('Fat', dailyTotals.macros.fat, totalMacros)}
-        ${createProgressBar('Carbs', dailyTotals.macros.carbs, totalMacros)}
-        <h3>Calories</h3>
-        ${createProgressBar('Calories', dailyTotals.calories, 2000)}
-    `;
-}
-
-// Category Button Event Listeners
-document.querySelectorAll('.category-btn').forEach(button => {
-    button.addEventListener('click', () => {
-        selectedCategory = button.dataset.category;
-        renderFoodItems();
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    // Initial Render
-    updateDailyTotals();
-    renderFoodItems();
-    renderDailyTotals();
-});
-
